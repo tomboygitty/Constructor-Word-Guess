@@ -7,7 +7,22 @@ function Word(word) {
     this.word = [];
     for (i = 0; i < letterArray.length; i++) {
         var temp = new Letter(letterArray[i]);
-        this.word.push(temp);
+        if (letterArray[i]===' ') {
+            this.word.push(temp);
+            this.word[i].guessed = true;
+        }
+        else {
+            this.word.push(temp);
+        }
+    }
+    this.guessed = function() {
+        var flag = true;
+        for (i = 0; i < this.word.length; i++) {
+            if (!this.word[i].guessed) {
+                flag = false;
+            }
+        }
+        return flag;
     }
     this.display = function() {
         var displayWord = '';
