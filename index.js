@@ -10,14 +10,20 @@ var words = ['pineapple', 'toothbrush', 'Terminator', 'appliance', 'teacup', 'ex
 // Global counter for remaining guesses
 var remainingGuesses;
 
+// Make string for letters already guessed
+var lettersGuessed = '';
+
+// Function to start a new game
 function newGame() {
     remainingGuesses = 10;
+    lettersGuessed = [];
     var random = Math.floor(Math.random()*15);
     word = new Word(words[random]);
     word.display();
     input();
 }
 
+// Function that prompts the users input and responds accordingly
 function input() {
     inquirer.prompt([
         {
@@ -31,33 +37,42 @@ function input() {
             input();
         }
         else {
-            if (word.check(answer.guess.toUpperCase())||word.check(answer.guess.toLowerCase())) {
-                if (word.guessed()) {
-                    word.display();
-                    console.log("CORRECT!!!\n\n");
-                    win();
-                }
-                else {
-                    word.display();
-                    console.log("CORRECT!!!\n\n");
-                    input();
-                }
+            if (lettersGuessed.includes(answer.guess.toUpperCase())||lettersGuessed.includes(answer.guess.toLowerCase())) {
+                word.display();
+                console.log("That letter has already been guessed. Please use another letter.");
+                input();
             }
             else {
-                remainingGuesses--;
-                if (remainingGuesses == 0) {
-                    lose();
+                lettersGuessed += answer.guess;
+                if (word.check(answer.guess)) {
+                    if (word.guessed()) {
+                        word.display();
+                        console.log("CORRECT!!!\n\n");
+                        win();
+                    }
+                    else {
+                        word.display();
+                        console.log("CORRECT!!!\n\n");
+                        input();
+                    }
                 }
                 else {
-                    word.display();
-                    console.log("INCORRECT!!!\n\n" + remainingGuesses + " guesses remaining!\n\n");
-                    input();
+                    remainingGuesses--;
+                    if (remainingGuesses == 0) {
+                        lose();
+                    }
+                    else {
+                        word.display();
+                        console.log("INCORRECT!!!\n\n" + remainingGuesses + " guesses remaining!\n");
+                        input();
+                    }
                 }
             }
         }
     });
 }
 
+// Function to end the game in a WIN condition and prompt the player for another game
 function win() {
     inquirer.prompt([
         {  
@@ -68,13 +83,14 @@ function win() {
         if (answer.win==='Y'||answer.win==='y') {
             newGame();
         }
-        else if (answer.win!=='N'||answer.win!=='n') {
+        else if (answer.win!=='N'&&answer.win!=='n') {
             console.log("Please enter a proper response.")
             win();
         }
     });
 }
 
+// Function to end the game in a LOSE condition and prompt the player for another game
 function lose() {
     inquirer.prompt([
         {  
@@ -85,11 +101,12 @@ function lose() {
         if (answer.lose==='Y'||answer.lose==='y') {
             newGame();
         }
-        else if (answer.lose!=='N'||answer.lose!=='n') {
+        else if (answer.lose!=='N'&&answer.lose!=='n') {
             console.log("Please enter a proper response.")
             lose();
         }
     });
 }
 
+// Initial function call to start the game
 newGame();
